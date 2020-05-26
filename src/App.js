@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import './App.css';
 import Person from './Person/Person';
+import Validate from './Validate/Validate';
+import Char from './Char/Char';
 
 class App extends Component {
 	state = {
@@ -9,7 +11,9 @@ class App extends Component {
 			{ id: 'qwerqerf', name: 'Manu', age: 29, username: 'default username value' },
 			{ id: 'ZXczxvff', name: 'Alaina', age: 26, username: 'default username value' }
 		],
-		showPersons: false
+    showPersons: false,
+    input_length: 0,
+    input: ''
 	};
 
 	// switchNameHandler = (newName) => {
@@ -58,7 +62,26 @@ class App extends Component {
 	togglePersonsHandler = () => {
 		const doesShow = this.state.showPersons;
 		this.setState({ showPersons: !doesShow });
-	};
+  };
+  
+  lengthHandler = () => {
+    const value = document.getElementById('text-input').value;
+    this.setState({
+      input_length: value.length,
+      input: value
+    });
+  }
+
+  deleteCharHandler = (index) => {
+    const stringArray = [...this.state.input];
+    const length = this.state.input_length - 1;
+    stringArray.splice(index, 1);
+
+    this.setState({
+      input: stringArray.join(''),
+      input_length: length
+    })
+  }
 
 	render() {
 		const style = {
@@ -67,7 +90,25 @@ class App extends Component {
 			border: '1px solid blue',
 			padding: '8px',
 			cursor: 'pointer'
-		};
+    };
+    
+    let charsFromInput = null;
+
+  
+      charsFromInput = (
+        <div>
+          {[...this.state.input].map((char, index) => {
+            return (
+              <Char 
+              char={char} 
+              clicked={() => this.deleteCharHandler(index)}
+              key={index}
+            />
+            );
+          })}
+        </div>
+      );
+  
 
 		let persons = null;
 
@@ -92,10 +133,10 @@ class App extends Component {
 		return (
 			<div className="App">
 				<h1>Hi, I'm a react App</h1>
-				<button style={style} onClick={this.togglePersonsHandler}>
-					Toggle Person's List
-				</button>
-				{persons}
+        <input type="text" id="text-input" onChange={() => this.lengthHandler()} value={this.state.input} />
+        <p>{this.state.input_length}</p>
+        <Validate text_length={this.state.input_length} />
+        {charsFromInput}
 			</div>
 		);
 	}
